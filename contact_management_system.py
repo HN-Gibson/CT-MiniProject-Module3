@@ -29,10 +29,12 @@ def add_contact(phone,name,email,notes):
     return
 
 def edit_contact(contact,info,value):
-    contact_info[f'{contact}'][f'{info}']=value         
+    contact_info[f'{contact}'][f'{info}']=value
+    return print("Contact updated!")         
 
 def delete_contact(contact):
     contact_info.pop(contact)
+    return print(f"Information associated with {contact} was deleted!")
 
 def search_contact(contact):
     if contact in contact_info:
@@ -196,12 +198,24 @@ while True:
                     print("No contact found.")
 
         elif user_request == "4":
-                requested_contact = input("What number would you like to search for?\nEnter in XXX-XXX-XXXX format:\n")
-                if requested_contact == "":
-                    raise UserInputEmpty
-                else:
-                    validate_phone(requested_contact)
-                    search_contact(requested_contact)
+            while True:
+                try:        
+                    requested_contact = input("What number would you like to search for?\nType 'q' to return to main menu.\nEnter in XXX-XXX-XXXX format:\n")
+                    if requested_contact == "q":
+                        break
+                    elif requested_contact == "":
+                        raise UserInputEmpty
+                    elif requested_contact not in contact_info:
+                        raise NoContactFound
+                    else:
+                        validate_phone(requested_contact)
+                        search_contact(requested_contact)
+                except UserInputEmpty:
+                    print("Input was empty.")
+                except InvalidEntry:
+                    print("Input did not match the expected format.")
+                except NoContactFound:
+                    print("No contact found.")
         
         elif user_request == "5":
             display_all(contact_info)
