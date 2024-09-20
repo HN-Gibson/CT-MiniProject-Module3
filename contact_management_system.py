@@ -149,22 +149,33 @@ while True:
                         raise UserInputEmpty
                     elif info_to_edit() == "name":
                         new_name = input("What's the new name?\n")
-                        edit_contact(contact_to_edit,"Name",new_name)
+                        if new_name == "":
+                            raise UserInputEmpty
+                        else:
+                            edit_contact(contact_to_edit,"Name",new_name)
                     elif info_to_edit() == "phone":
                         new_phone = input("What's the new phone number?\n")
-                        validate_phone(new_phone)
-                        if new_phone in contact_info:
-                            raise ContactExists
+                        if new_phone == "":
+                            raise UserInputEmpty
                         else:
-                            edit_contact(contact_to_edit,"Phone",new_phone)
-                            contact_info[f'{new_phone}'] = contact_info.pop(f'{contact_to_edit}')
+                            validate_phone(new_phone)
+                            if new_phone in contact_info:
+                                raise ContactExists
+                            else:
+                                edit_contact(contact_to_edit,"Phone",new_phone)
+                                contact_info[f'{new_phone}'] = contact_info.pop(f'{contact_to_edit}')
                     elif info_to_edit() == "email":
                         new_email = input("What's the new email?\n")
-                        validate_email(new_email)
-                        edit_contact(contact_to_edit,"Email",new_email)
+                        if new_phone == "":
+                            raise UserInputEmpty
+                        else:
+                            validate_email(new_email)
+                            edit_contact(contact_to_edit,"Email",new_email)
                     elif info_to_edit() == "notes":
                         new_note = input("What's the new note?\nThis action will overwrite the old new entirely\n")
                         edit_contact(contact_to_edit,"Notes",new_note)
+                except ContactExists:
+                    print("Phone number already exists!") 
                 except UserInputEmpty:
                     print("Input was empty.")
                 except InvalidEntry:
