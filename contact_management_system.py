@@ -1,18 +1,13 @@
 import re
 
-#created a custom error to catch empty inputs
 class UserInputEmpty(Exception):
     pass
-#created a custom error to catch when user inputs a command not on the list
 class CommandNotFound(Exception):
     pass
-#created a custom error to catch when the input is not validated
 class InvalidEntry(Exception):
     pass
-#created a custom error to catch when a contact already exists
 class ContactExists(Exception):
     pass
-#created a custom error to catch when a contact does not exist
 class NoContactFound(Exception):
     pass
 
@@ -231,10 +226,10 @@ while True:
                
         else:
             raise CommandNotFound
-    #implemented an exception to handle when the user enters nothing
+
     except UserInputEmpty:
         print("Input was empty.")
-    #implemented an exception to handle when the user enters a command that doesn't match the options
+
     except CommandNotFound:
         print("Input doesn't match available commands.")
     
@@ -243,10 +238,10 @@ while True:
     
     except NoContactFound:
         print("No contact found.")
-    #used else to print the menu each time the user is prompted to enter a command for the application
+
     else:
         print(menu)                   
-    #ensured the program will always thank the user
+
     finally:
         if user_request != "8":
             print("Please select another option.")
