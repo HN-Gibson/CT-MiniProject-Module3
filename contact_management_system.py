@@ -16,7 +16,6 @@ class ContactExists(Exception):
 class NoContactFound(Exception):
     pass
 
-# 3. Implement actions in response to menu selections
 def add_contact(phone,name,email,notes):
     contact_info[f'{phone}']={}
     contact_info[f'{phone}']["Name"]=name
@@ -32,8 +31,8 @@ def add_contact(phone,name,email,notes):
 def edit_contact(contact,info,value):
     contact_info[f'{contact}'][f'{info}']=value         
 
-def delete_contact():
-    pass
+def delete_contact(contact):
+    contact_info.pop(contact)
 
 def search_contact(contact):
     if contact in contact_info:
@@ -45,17 +44,27 @@ def search_contact(contact):
     return
 
 def display_all(dictionary):
-    for contact, info in dictionary.items():
-        print(f"Info for {contact}:")
-        for key, value in info.items():
-            print(f"    {key}:{value}")
+    if dictionary == {}:
+        print("No Contacts Listed")
+    else:
+        for contact, info in dictionary.items():
+            print(f"Info for {contact}:")
+            for key, value in info.items():
+                print(f"    {key}:{value}")
     return
 
-def export_contacts():
-    pass
+def export_contacts(dictionary):
+    with open('my_contacts.txt', 'w') as file:
+        for contact,info in dictionary.items():
+            file.write(f"\n{contact}:")
+            for key, value in info.items():
+                file.write(f"\n   {key}:{value}")
 
-def import_contacts(): #Bonus
-    pass
+# def import_contacts(path): #Bonus
+#     with open(f'{path}','r') as file:
+#         for line in file:
+#             contact, info = line.strip().split(':')
+#             contact_info[contact]=info
 
 def validate_phone(phone):
     valid_phone = r'\d{3}-\d{3}-\d{4}'
@@ -71,7 +80,6 @@ def validate_email(email):
     else:
         raise InvalidEntry
 
-# 1. Create a user-friendly command-line interface (CLI) for the Contact Management System.
 menu = ("""
 Welcome to the Contact Management System! 
     Menu:
@@ -81,19 +89,11 @@ Welcome to the Contact Management System!
     4. Search for a contact
     5. Display all contacts
     6. Export contacts to a text file
-    7. Import contacts from a text file *BONUS*
+    7. Import contacts from a text file (WIP)
     8. Quit
         """)
 
-# 2. Use nested dictionaries as the main data structure for storing contact information.
-contact_info = {
-    "555-555-5555": {
-        "Name":"Test",
-        "Phone":"555-555-5555",
-        "Email":"test@test.com",
-        "Notes":"This is a test!" 
-    }
-}
+contact_info = {}
 
 print(menu)
 
@@ -176,8 +176,25 @@ while True:
                     print("No contact found.")
 
         elif user_request == "3":
-            delete_contact()
-        
+            while True:
+                try:
+                    contact_to_delete = input("What is the phone number for the contact you wish to delete?\nType 'q' to return to main menu.\nEnter in XXX-XXX-XXXX format:\n")
+                    if contact_to_delete == "q":
+                        break
+                    elif contact_to_delete == "":
+                        raise UserInputEmpty
+                    elif contact_to_delete not in contact_info:
+                        raise NoContactFound
+                    else:
+                        validate_phone(contact_to_delete)
+                        delete_contact(contact_to_delete)
+                except UserInputEmpty:
+                    print("Input was empty.")
+                except InvalidEntry:
+                    print("Input did not match the expected format.")
+                except NoContactFound:
+                    print("No contact found.")
+
         elif user_request == "4":
                 requested_contact = input("What number would you like to search for?\nEnter in XXX-XXX-XXXX format:\n")
                 if requested_contact == "":
@@ -190,10 +207,10 @@ while True:
             display_all(contact_info)
 
         elif user_request == "6":
-            export_contacts()
+            export_contacts(contact_info)
 
         elif user_request == "7":
-            import_contacts()
+            print("This feature is a work in progress.\nPlease use other features.")
         
         elif user_request == "":
             raise UserInputEmpty 
