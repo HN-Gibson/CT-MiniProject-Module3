@@ -106,8 +106,7 @@ while True:
         elif user_request == "1":
             while True:
                 try:
-                    
-                    add_phone = input("What is the phone number you would like to add?\nEnter 'q' to quit adding contacts.\nEnter in XXX-XXX-XXXX format:\n")
+                    add_phone = input("What is the phone number you would like to add?\nType 'q' to return to main menu.\nEnter in XXX-XXX-XXXX format:\n")
                     if add_phone == "q":
                         break
                     elif add_phone == "":
@@ -138,22 +137,43 @@ while True:
                     print("Input did not match the expected format.")    
         
         elif user_request == "2":
-            contact_to_edit=input("What is the phone number for the contact you wish to edit?\nEnter in XXX-XXX-XXXX format:\n")
-            info_to_edit=input("Would you like to edit name, phone, email, or notes?\n").lower
-            if info_to_edit() == "":
-                raise UserInputEmpty
-            elif info_to_edit() == "name":
-                new_name = input("What's the new name?\n")
-                edit_contact(contact_to_edit,"Name",new_name)
-            elif info_to_edit() == "phone":
-                new_phone = input("What's the new phone number?\n")
-                edit_contact(contact_to_edit,"Phone",new_phone)
-            elif info_to_edit() == "email":
-                new_email = input("What's the new email?\n")
-                edit_contact(contact_to_edit,"Email",new_email)
-            elif info_to_edit() == "notes":
-                new_note = input("What's the new note?\nThis action will overwrite the old new entirely\n")
-                edit_contact(contact_to_edit,"Notes",new_note)
+            while True:
+                try:
+                    contact_to_edit=input("What is the phone number for the contact you wish to edit?\nType 'q' to return to main menu.\nEnter in XXX-XXX-XXXX format:\n")
+                    if contact_to_edit == "q":
+                        break
+                    elif contact_to_edit == "":
+                        raise UserInputEmpty
+                    validate_phone(contact_to_edit)
+                    if contact_to_edit not in contact_info:
+                        raise NoContactFound
+                    info_to_edit=input("Would you like to edit name, phone, email, or notes?\n").lower
+                    if info_to_edit() == "":
+                        raise UserInputEmpty
+                    elif info_to_edit() == "name":
+                        new_name = input("What's the new name?\n")
+                        edit_contact(contact_to_edit,"Name",new_name)
+                    elif info_to_edit() == "phone":
+                        new_phone = input("What's the new phone number?\n")
+                        validate_phone(new_phone)
+                        if new_phone in contact_info:
+                            raise ContactExists
+                        else:
+                            edit_contact(contact_to_edit,"Phone",new_phone)
+                            contact_info[f'{new_phone}'] = contact_info.pop(f'{contact_to_edit}')
+                    elif info_to_edit() == "email":
+                        new_email = input("What's the new email?\n")
+                        validate_email(new_email)
+                        edit_contact(contact_to_edit,"Email",new_email)
+                    elif info_to_edit() == "notes":
+                        new_note = input("What's the new note?\nThis action will overwrite the old new entirely\n")
+                        edit_contact(contact_to_edit,"Notes",new_note)
+                except UserInputEmpty:
+                    print("Input was empty.")
+                except InvalidEntry:
+                    print("Input did not match the expected format.")
+                except NoContactFound:
+                    print("No contact found.")
 
         elif user_request == "3":
             delete_contact()
@@ -197,5 +217,6 @@ while True:
         print(menu)                   
     #ensured the program will always thank the user
     finally:
-        print("Please select another option.")
+        if user_request != "8":
+            print("Please select another option.")
 print("Thank you for using my program!")
